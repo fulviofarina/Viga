@@ -1,0 +1,59 @@
+set grid
+set title 'Resultados generales'
+set xlabel 'x'
+set ylabel 't'
+set zlabel 'w'
+set yrange [0:1]
+set zrange [-1:1]
+set terminal gif animate delay 10
+set output "pics/Surface.gif"
+splot 'files/viga1.datm' using 1:8:2:7 with points palette pointsize 1 pointtype 1
+splot 'files/viga2.datm' using 1:8:2:7 with points palette pointsize 1 pointtype 1
+splot 'files/viga3.datm' using 1:8:2:7 with points palette pointsize 1 pointtype 1
+splot 'files/viga4.datm' using 1:8:2:7 with points palette pointsize 1 pointtype 1
+splot 'files/viga5.datm' using 1:8:2:7 with points palette pointsize 1 pointtype 1
+splot 'files/viga6.datm' using 1:8:2:7 with points palette pointsize 1 pointtype 1
+splot 'files/viga7.datm' using 1:8:2:7 with points palette pointsize 1 pointtype 1
+splot 'files/viga8.datm' using 1:8:2:7 with points palette pointsize 1 pointtype 1
+splot 'files/viga9.datm' using 1:8:2:7 with points palette pointsize 1 pointtype 1
+splot 'files/viga10.datm' using 1:8:2:7 with points palette pointsize 1 pointtype 1
+splot 'files/viga11.datm' using 1:8:2:7 with points palette pointsize 1 pointtype 1
+splot 'files/viga12.datm' using 1:8:2:7 with points palette pointsize 1 pointtype 1
+splot 'files/viga13.datm' using 1:8:2:7 with points palette pointsize 1 pointtype 1
+splot 'files/viga14.datm' using 1:8:2:7 with points palette pointsize 1 pointtype 1
+splot 'files/viga15.datm' using 1:8:2:7 with points palette pointsize 1 pointtype 1
+splot 'files/viga16.datm' using 1:8:2:7 with points palette pointsize 1 pointtype 1
+splot 'files/viga17.datm' using 1:8:2:7 with points palette pointsize 1 pointtype 1
+splot 'files/viga18.datm' using 1:8:2:7 with points palette pointsize 1 pointtype 1
+splot 'files/viga19.datm' using 1:8:2:7 with points palette pointsize 1 pointtype 1
+splot 'files/viga20.datm' using 1:8:2:7 with points palette pointsize 1 pointtype 1
+splot 'files/viga21.datm' using 1:8:2:7 with points palette pointsize 1 pointtype 1
+splot 'files/viga22.datm' using 1:8:2:7 with points palette pointsize 1 pointtype 1
+splot 'files/viga23.datm' using 1:8:2:7 with points palette pointsize 1 pointtype 1
+splot 'files/viga24.datm' using 1:8:2:7 with points palette pointsize 1 pointtype 1
+splot 'files/viga25.datm' using 1:8:2:7 with points palette pointsize 1 pointtype 1
+splot 'files/viga26.datm' using 1:8:2:7 with points palette pointsize 1 pointtype 1
+splot 'files/viga27.datm' using 1:8:2:7 with points palette pointsize 1 pointtype 1
+splot 'files/viga28.datm' using 1:8:2:7 with points palette pointsize 1 pointtype 1
+splot 'files/viga29.datm' using 1:8:2:7 with points palette pointsize 1 pointtype 1
+splot 'files/viga30.datm' using 1:8:2:7 with points palette pointsize 1 pointtype 1
+splot 'files/viga31.datm' using 1:8:2:7 with points palette pointsize 1 pointtype 1
+splot 'files/viga32.datm' using 1:8:2:7 with points palette pointsize 1 pointtype 1
+splot 'files/viga33.datm' using 1:8:2:7 with points palette pointsize 1 pointtype 1
+splot 'files/viga34.datm' using 1:8:2:7 with points palette pointsize 1 pointtype 1
+splot 'files/viga35.datm' using 1:8:2:7 with points palette pointsize 1 pointtype 1
+splot 'files/viga36.datm' using 1:8:2:7 with points palette pointsize 1 pointtype 1
+splot 'files/viga37.datm' using 1:8:2:7 with points palette pointsize 1 pointtype 1
+splot 'files/viga38.datm' using 1:8:2:7 with points palette pointsize 1 pointtype 1
+splot 'files/viga39.datm' using 1:8:2:7 with points palette pointsize 1 pointtype 1
+splot 'files/viga40.datm' using 1:8:2:7 with points palette pointsize 1 pointtype 1
+splot 'files/viga41.datm' using 1:8:2:7 with points palette pointsize 1 pointtype 1
+splot 'files/viga42.datm' using 1:8:2:7 with points palette pointsize 1 pointtype 1
+splot 'files/viga43.datm' using 1:8:2:7 with points palette pointsize 1 pointtype 1
+splot 'files/viga44.datm' using 1:8:2:7 with points palette pointsize 1 pointtype 1
+splot 'files/viga45.datm' using 1:8:2:7 with points palette pointsize 1 pointtype 1
+splot 'files/viga46.datm' using 1:8:2:7 with points palette pointsize 1 pointtype 1
+splot 'files/viga47.datm' using 1:8:2:7 with points palette pointsize 1 pointtype 1
+splot 'files/viga48.datm' using 1:8:2:7 with points palette pointsize 1 pointtype 1
+splot 'files/viga49.datm' using 1:8:2:7 with points palette pointsize 1 pointtype 1
+splot 'files/viga50.datm' using 1:8:2:7 with points palette pointsize 1 pointtype 1

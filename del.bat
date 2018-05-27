@@ -1,8 +1,14 @@
 @echo off
+cd "src"
 del *.exe
 del *.obj
 del *.pdb
 del *.gnu
+cd "pics"
+del *.gif
+cd ".."
+cd "files"
 del *.dat
-del *.datd
 del *.datm
+cd ".."
+cd ".."
