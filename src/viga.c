@@ -50,13 +50,7 @@ void bucleT(int nrofSteps, double h, double printEach, struct viga *a)
 	}
 }
 
-void makeGNUPlot(int surface, int nroOfFiles, char* filebase)
-{
-	initGNUPlot(surface, D3, D4, "1", "1");
-	chooseD();
-	makeGNUScript(nroOfFiles, filebase);
-	composeGNUFile();
-}
+
 
 
 int main(int ar, char *argv[])
@@ -92,7 +86,7 @@ int main(int ar, char *argv[])
 	
 	/////////////////////////////////////////////////
 	//////////////////////////////////////////////
-	makeGNUPlot(1,N, r.FILENAME);
+	makeGNUPlot(N, r.FILENAME,D3,D4,"1","1", 0);
 	//	system("gnuplot gnuFinal.gnu");
 
 	return 0;

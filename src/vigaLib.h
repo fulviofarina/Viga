@@ -9,7 +9,7 @@ struct viga
 {
     double F, E, I, L, W, H;
     double m, m_test;
-    double w, w0, z, x, error, freq, dx, xf, Fx, t;
+    double w, w0, z, x,y, error, freq, dx, xf,yf, Fx, t;
     void *fp, *mainfp;
     unsigned int norm, forcedIndex;
     char *FILENAME;

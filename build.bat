@@ -14,7 +14,8 @@ viga.exe "files/viga" 210e+9 1 0.02 0.02 0 0 0 0.001 n 6.2832 1
 REM gnuplot gnu.b
 REM gnuplot gnu2.b
 
-gnuplot gnuFinal.gnu
+gnuplot gnuPlot.gnu
+gnuplot gnuSurface.gnu
 
 cd ".."
 REM call "del.bat"

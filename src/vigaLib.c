@@ -17,6 +17,7 @@ void initViga(struct viga *a, char *argv[])
     a->L = atof(argv[3]);
 
     a->xf = a->L;
+    a->yf = a->L;
 
     a->W = atof(argv[4]);
     a->H = atof(argv[5]);

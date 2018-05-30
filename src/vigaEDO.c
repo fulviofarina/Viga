@@ -24,8 +24,10 @@ double edo1(double x, double w, double t, double (*forced)(double, void *), void
 	struct viga *a = (struct viga *)vo;
 
 	double a1 = coefficient(a);
-	double a3 = a->L - x;
-
+	double a3 = (a->L - x);
+//	double a3 = (a->L*a->L)-(2*a->L*x)+(x*x);
+	//a3*=-0.5;
+	a3 *=  (-1*a3*0.5);
 	double a2 = 0;
 #if defined(TIME)
 	a2 = forced(t, a);
