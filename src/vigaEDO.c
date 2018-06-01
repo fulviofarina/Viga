@@ -22,26 +22,48 @@ void debugEDO(double a1, double a2, double a3)
 double edo1(double x, double w, double t, double (*forced)(double, void *), void *vo) //sistema de EDOs 1er orden acopladas
 {
 	struct viga *a = (struct viga *)vo;
+	a->Vol = volume(a);
+    a->I = inertia(a);
+	double EI = coefficient(a);
+	   double inv_coeff = 1.0 / EI;
 
-	double a1 = coefficient(a);
-	double a3 = (a->L - x);
-//	double a3 = (a->L*a->L)-(2*a->L*x)+(x*x);
-	//a3*=-0.5;
-	a3 *=  (-1*a3*0.5);
-	double a2 = 0;
+#if defined(DEBUG_COEFFICIENT)
+    printf("I= %.2e\t", a->I);
+    printf("I*E= %.2e\t", EI);
+    printf("1:(I*E)= %.2e\n", inv_coeff);
+#endif
+    // si no hay fuerza usar el coeficiente para normalizar
+
+
+	  if (a->norm == 1)
+    {
+        a->F = EI;
+        // printf("FAmpli= %.2e\n", a->F);
+        //  printf("norm\n");
+    }
+	double dLx = (a->L - x);
+	//force density
+	//double ro = 1;
+	double p =a->Vol *a->ro*gravedad;
+	p/=a->L;
+//	p *= -1*dLx*dLx*0.5;
+
+
+	//double a2 = 0;
 #if defined(TIME)
-	a2 = forced(t, a);
+	a->Fx = forced(t, a);
 #else
-	a2 = forced(x, a);
+	a->Fx= forced(x, a);
 #endif
 
 #if defined(DEBUG_COEFFICIENT)
-	debugEDO(a1, a2, a3);
+	debugEDO(EI, a->Fx, dLx);
 #endif
 
-	a->Fx = a2 * a1;
+	
 
-	return a1 * a2 * a3;
+
+	return (a->Fx*dLx - p*dLx*dLx*0.5)*inv_coeff*-1;
 }
 
 //1st and 2nd argumento como en el algoritmo de RK4
@@ -83,8 +105,8 @@ void solve(void *vo)
 	a->x += a->dx;
 	a->w0 = a->w;
 
-	a->z += RK4(a->x, a->w, a->dx, a->t, edoAUsar[0], forzado[a->forcedIndex], a);
-	a->w += RK4(a->x, a->z, a->dx, a->t, edoAUsar[1], forzado[a->forcedIndex], a);
+	a->dwdx += RK4(a->x, a->w, a->dx, a->t, edoAUsar[0], forzado[a->forcedIndex], a);
+	a->w += RK4(a->x, a->dwdx, a->dx, a->t, edoAUsar[1], forzado[a->forcedIndex], a);
 
 	a->error = theory(a->x, a->t, forzado[a->forcedIndex], a);
 	a->error = (a->w - a->error) * 100 / a->error;

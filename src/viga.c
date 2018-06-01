@@ -5,7 +5,7 @@
 #include "vigaEDO.h"
 
 #define D3 "1:2:7"
-#define D4 "1:8:2:7"
+#define D4 "1:5:2:7"
 
 #include <string.h>
 #include <stdio.h>
@@ -32,7 +32,12 @@ void bucleT(int nrofSteps, double h, double printEach, struct viga *a)
 	//save the old initial x0
 	double x0 = a->x;
 	double w0 = a->w;
-	double z0 = a->z;
+	double dwdx0 = a->dwdx;
+	double y0 = a->y;
+
+//deactivate force
+	int forcedIndex = a->forcedIndex;
+	a->forcedIndex = 0;
 
 	for (int i = 0; i <= nrofSteps; i++) //loop del algoritmo
 	{
@@ -41,9 +46,30 @@ void bucleT(int nrofSteps, double h, double printEach, struct viga *a)
 		//printf(fileData);
 		
 		double t0 = i * h;
-		inicialCond(x0, t0, w0, z0, &r);
+		a->t = t0;
+  
+        a->y = y0;
+
+if (i>nrofSteps*0.25)
+{
+	a->forcedIndex=forcedIndex;
+}
+else if (i>nrofSteps*0.55)
+{
+		a->forcedIndex=0;
+}
+
+	for (int j = 0; a->y < a->yf + a->dy; j++) //loop del algoritmo
+	{
+		  a->x = x0;
+         a->w = w0;
+         a->dwdx = dwdx0;
+	   // printf("%.2e\t%.2e\n",a->y,a->dy);
 		bucleX(printEach, a);
-	
+		a->y+=a->dy;
+		
+	}
+
 		closeFile(a->fp);
 
 		//printf("\tok\n");
@@ -86,7 +112,7 @@ int main(int ar, char *argv[])
 	
 	/////////////////////////////////////////////////
 	//////////////////////////////////////////////
-	makeGNUPlot(N, r.FILENAME,D3,D4,"1","1", 0);
+	makeGNUPlot(N, r.FILENAME,D3,D4,"5","0.3", 0);
 	//	system("gnuplot gnuFinal.gnu");
 
 	return 0;

@@ -1,11 +1,12 @@
 
 
-#define equForzado 4
+#define equForzado 5
 
 
 double (*forzado[equForzado])(double, void *);
 
 
+double forcedFunctionNULL(double x, void *vo);
 double forcedFunction1(double x, void *vo);
 double forcedFunction2(double x, void *vo);
 double forcedFunction3(double x, void *vo);

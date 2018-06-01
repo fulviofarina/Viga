@@ -2,6 +2,10 @@
 #include "vigaForzado.h"
 #include <math.h>
 
+double forcedFunctionNULL(double x, void *vo)
+{
+return 0;
+}
 double forcedFunction1(double x, void *vo)
 {
     struct viga *a = (struct viga *)vo;
@@ -38,8 +42,10 @@ double forcedFunction4(double x, void *vo)
 
 void initForzado()
 {
-    forzado[0] = forcedFunction1;
-    forzado[1] = forcedFunction2;
-    forzado[2] = forcedFunction3;
-    forzado[3] = forcedFunction4;
+       
+    forzado[0] = forcedFunctionNULL;
+    forzado[1] = forcedFunction1;
+    forzado[2] = forcedFunction2;
+    forzado[3] = forcedFunction3;
+    forzado[4] = forcedFunction4;
 }
