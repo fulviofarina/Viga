@@ -4,115 +4,125 @@
 #include "vigaForzado.h"
 #include "vigaEDO.h"
 
-#define D3 "1:2:7"
-#define D4 "1:5:2:7"
+#define D3 "1:2:1"
+#define D4 "1:5:2:1"
 
 #include <string.h>
 #include <stdio.h>
 
-void bucleX(double printEach, struct viga *a)
+void bucleX(int printEach, struct viga *a)
 {
-	double printer = printEach;
+	int printer = printEach;
 
-	for (int j = 0; a->x <= a->xf + a->dx; j++) //loop del algoritmo
+	for (a->k_iter = 0; a->k_iter < a->maxCells; a->k_iter++) //loop del algoritmo
 	{
+
+		
+		solve(a);
+
+		a->error = theory(a->x, a->t, forzado[a->forcedIndex], a);
+		if (a->error != 0.0)
+		{
+			a->error = (a->X[0][a->k_iter] - a->error) * 100 / a->error;
+		}
+		
 		if (printer == printEach)
 		{
-			printData(a->fp, a);
-			printData(a->mainfp, a);
+		
+			a->y = -1 * a->yf;
+			for (int i = 0; a->y <= a->yf; i++) //loop del algoritmo
+			{
+				printData(a->fp, a);
+				printData(a->mainfp, a);
+				a->y += a->dy;
+			}
 			printer = 0;
 		}
 		printer++;
-		solve(a);
+
+		a->x -= a->dx;
+
+		
+
 	}
 }
 
-void bucleT(int nrofSteps, double h, double printEach, struct viga *a)
+int bucleT(int nrofSteps, double h, double printEach, struct viga *a)
 {
 	//save the old initial x0
-	double x0 = a->x;
-	double w0 = a->w;
-	double dwdx0 = a->dwdx;
-	double y0 = a->y;
 
-//deactivate force
+	//deactivate force
 	int forcedIndex = a->forcedIndex;
 	a->forcedIndex = 0;
 
-	for (int i = 0; i <= nrofSteps; i++) //loop del algoritmo
-	{
-		char *fileData = getFileName(i, a->FILENAME);
-		a->fp = openFile(fileData, "w");
-		//printf(fileData);
+		double x0 = a->x; // = a->L;
+
+		int i = 0;
+		for (i = 0; i <= nrofSteps; i++) //loop del algoritmo
+		{
+			char *fileData = getFileName(i, a->FILENAME);
+			a->fp = openFile(fileData, "w");
+
+			a->t = i * h;
+
+			double off = (nrofSteps * 0.06) * h;
+			double on = (nrofSteps * 0.05) * h;
+			onOff(a,on,off, forcedIndex);
+			
+		//	for (int i = 0; i < equ; i++)
+			{
+				//for (int k = 0; k < a->maxCells; k++)
+				{
+			//a->X[i][k] = 0;
+				}
+			}
 		
-		double t0 = i * h;
-		a->t = t0;
-  
-        a->y = y0;
+			a->x = x0;
+			bucleX(printEach, a);
 
-if (i>nrofSteps*0.25)
-{
-	a->forcedIndex=forcedIndex;
+			closeFile(a->fp);
+		}
+
+		return i - 1; //number of files made
 }
-else if (i>nrofSteps*0.55)
-{
-		a->forcedIndex=0;
-}
-
-	for (int j = 0; a->y < a->yf + a->dy; j++) //loop del algoritmo
-	{
-		  a->x = x0;
-         a->w = w0;
-         a->dwdx = dwdx0;
-	   // printf("%.2e\t%.2e\n",a->y,a->dy);
-		bucleX(printEach, a);
-		a->y+=a->dy;
-		
-	}
-
-		closeFile(a->fp);
-
-		//printf("\tok\n");
-	}
-}
-
-
-
 
 int main(int ar, char *argv[])
 {
+
+	
 
 	initEDOs();
 
 	initForzado();
 
 	initViga(&r, argv);
+	
+	initCeldas(&r);
+	limpiaCeldas(&r);
+
 	printInitViga(&r); //tiempo-vx-vy
 
-	float PRINT_BAR = (float)1 / 100;
-	PRINT_BAR *= (r.xf - r.x) / r.dx;
+	int PRINT_BAR;
+	
+	//printf("%i",pieces);
 
-	int N = 10;
-	double dt = 1;
-	if (r.freq != 0)
-	{
-		dt /= r.freq;
-	}
-	dt /= N;
+	PRINT_BAR = (r.maxCells)/100;
 
-	N *= 5;
+
 
 	r.mainfp = openFile(r.FILENAME, "w");
 
-    bucleT(N,dt,PRINT_BAR,&r);
+	int files = bucleT(r.maxTimeCells, r.dt, PRINT_BAR, &r);
 
 	closeFile(r.mainfp);
 
-	printf("\n");
-	
+	liberaCeldas(&r);
+
+		printf("\n");
+
 	/////////////////////////////////////////////////
 	//////////////////////////////////////////////
-	makeGNUPlot(N, r.FILENAME,D3,D4,"5","0.3", 0);
+	makeGNUPlot(files, r.FILENAME, D3, D4, "5", "0.3", 0);
 	//	system("gnuplot gnuFinal.gnu");
 
 	return 0;
