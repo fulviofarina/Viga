@@ -44,16 +44,16 @@ void bucleX(int printEach, struct viga *a, int t_iter)
 
 int bucleT(struct viga *a)
 {
-	int PRINT_BARX = (r.maxCells) / 30;
+	int PRINT_BARX = (r.maxCells) / 50;
 	PRINT_BARX--;
-	int PRINT_BART = r.maxTimeCells / 40;
+	int PRINT_BART = r.maxTimeCells / 100;
 	PRINT_BART--;
 		int when = 0;
 
 	int whenX = 0;
 	//desactiva fuerza
 	int forcedIndex = a->forcedIndex;
-	a->forcedIndex = 0;
+//	a->forcedIndex = 0;
 	int t_iter = 0;
 	//salva el x0 inicial
 	double x0 = a->x;
@@ -64,11 +64,21 @@ int bucleT(struct viga *a)
 
 		a->t = i * a->dt;
 
-		//double off = (a->maxTimeCells * 0.60) * a->dt;
-
+/*
 		double off = (a->maxTimeCells * 0.3) * a->dt;
 		double on = (a->maxTimeCells * 0.15) * a->dt;
 		onOff(a, on, off, forcedIndex);
+		//double off = (a->maxTimeCells * 0.60) * a->dt;
+		if (a->t > condOn)
+		{
+			a->forcedIndex = forcedIndex;
+		}
+		if (a->t > condOff)
+		{
+			a->forcedIndex = 0;
+		}
+
+*/		
 
 		a->x = x0;
 
@@ -89,34 +99,58 @@ double diffinitas(void *p)
 {
 	struct viga *a = (struct viga *)p;
 
-	double w2 = 6 * a->X[0][a->k_iter];
-	//if (h == 1)
-	//printf("\nw2 = %.2e\t", w2);
+	double w0=0;
+	double w2,w1,w2_,w1_;
+	w2=0;
+	w1=0;
+	w2_=0;
+	w1_=0;
+
+   double coeff = 1;
+//	coeff = coefficient(a) ;
+//coeff*= (a->L / a->m);
+//	coeff /= dx4(a);
+
+	
+
+	w0 = 6 * a->X[0][a->k_iter] * coeff;
+
+	
 	if (a->k_iter < a->maxCells - 2)
 	{
-		w2 += a->X[0][a->k_iter + 2];
+		w2 = a->X[0][a->k_iter + 2] *coeff;
 	}
-	//	if (h == 1)
-	//printf("w2 = %.2e\t", w2);
+
+	
 	if (a->k_iter < a->maxCells - 1)
 	{
-		w2 += (-4) * a->X[0][a->k_iter + 1];
+		w1 = (-4) * a->X[0][a->k_iter + 1] * coeff;
 	}
-	//if (h == 1)
-	//printf("w2 = %.2e\t", w2);
+
+
 	if (a->k_iter >= 2)
 	{
-		w2 += a->X[0][a->k_iter - 2];
+		w2_ += a->X[0][a->k_iter - 2] * coeff;
 	}
-	//	if (h == 1)
-	//printf("w2 = %.2e\t", w2);
+	
 	if (a->k_iter >= 1)
 	{
-		w2 += (-4) * a->X[0][a->k_iter - 1];
+		w1_ = (-4) * a->X[0][a->k_iter - 1] * coeff;
 	}
-	//if (h == 1)
-	//printf("w2 = %.2e\t", w2);
-	return w2;
+
+	double sum = (w0 + w1 + w2 + w1_ + w2_);
+#if defined(DEBUG_COEFFICIENT)
+	printf("\ncoeff = %.2e\t", coeff);
+	printf("w0 = %.2e\t", w0);
+	printf("w2 = %.2e\t", w2);
+	printf("w1 = %.2e\t", w1);
+	printf("w2_ = %.2e\t", w2_);
+	printf("w1_ = %.2e\t", w1_);
+	printf("k = %i\t", a->k_iter);
+	printf("sum = %.2e\t", sum);
+#endif
+
+	return sum;
 }
 //1st and 2nd argumento como en el algoritmo de RK4
 double edo2(double t, double z, double x, double (*forced)(double, void *), void *vo) //sistema de EDOs 1er orden acopladas
@@ -144,39 +178,41 @@ double edo2(double t, double z, double x, double (*forced)(double, void *), void
 
 	double w2 = diffinitas(a);
 
-	double wterm = dx4(a);
-
-	//	if (h == 1)
-	//	printf("\ndx4= %.2e\n", wterm);
+	double wterm = 1;
+	wterm = dx4(a);
 	wterm /= EI;
 
-	//	if (h == 1)
+	double coeff =1;
+//	coeff =coefficient(a) ;
+//	coeff *= (a->L / a->m);
+//	coeff /= dx4(a);
 
-	double Q = wterm * (a->Fx + a->qL);
+			double Q = (a->Fx + a->qL);
 
-	//printf("\nFx= %.2e\n", a->qL);
-	//	if (h == 1)
-	//		printf("\nwterm*q= %.2e\n", Q);
+	Q *= coeff *wterm ;
+
+		//printf("\n%.2e\t%.2e\t%.2e", wterm, Q, w2);
+		//printf("\nFx= %.2e\n", a->qL);
+		//	if (h == 1)
+		//		printf("\nwterm*q= %.2e\n", Q);
 	Q = Q - w2;
+
 	//	if (h == 1)
 	//		printf("\nq-w2= %.2e\n", Q);
 
 #if defined(DEBUG_COEFFICIENT)
-	printf("I= %.2e\t", a->I);
-	printf("I*E= %.2e\t", EI);
-	printf("1:(I*E)= %.2e\n", inv_coeff);
-	printf("Fx= %.2e\t", a->Fx);
-	printf("wterm= %.2e\t", wterm);
-	printf("p= %.2e\n", p);
+		printf("\ncoeff*wterm=invMassDens= %.2e\tQ= %.2e\tw2= %.2e\n", coeff * wterm, Q, w2);
 
 #endif
 
 
 //	coeff = sqrt(coeff);
 
-
+	
 	//double k = (10 / EI);
 	//	k *= (a->X[0][a->k_iter]);
+	//printf("\n%.2e\t%.2e", coeff, Q);
+
 	return Q ;
 }
 //1st and 2nd argumento como en el algoritmo de RK4
@@ -199,11 +235,11 @@ void solve(void *vo)
 	struct viga *a = (struct viga *)vo;
 	
 
-	if (a->k_iter < a->maxCells - 1)
+	if (a->k_iter < a->maxCells - 1 )
 	{
 		for (int k = equ - 1; k >= 0; k--)
 		{
-			a->X[k][a->k_iter + 1] = a->X[k][a->k_iter] + RK4(a->t, a->X[k][a->k_iter], a->dt , a->x, edoAUsar[k], forzado[a->forcedIndex], a);
+			a->X[k][a->k_iter+1 ] = a->X[k][a->k_iter] + Euler(a->t, a->X[k][a->k_iter], a->dt , a->x, edoAUsar[k], forzado[a->forcedIndex], a);
 		}
 	}
 }

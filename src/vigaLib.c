@@ -68,18 +68,17 @@ double inertia(struct viga *a)
 void initFreqForz(char *aux, struct viga *a)
 {
     
-    double raiz = coefficient(a) / (a->L * a->L * a->L * a->L);
-  
-    raiz /= a->m;
-    raiz = sqrt(raiz);
-   
-    a->freq = atof(aux) * raiz * 3.52;
+  //  double raiz = coefficient(a) / (a->L * a->L * a->L * a->L);
+  //  raiz /= a->m;
+  //  raiz = sqrt(raiz);
+    a->freq = atof(aux)*2*M_PI ;
+  //  a->freq *= raiz * 3.52;
     a->fase = 0;
 }
 void initTiempo(char *aux, struct viga *a)
 {
     a->tf = atof(aux);
-    a->dt = 1e-3;
+    a->dt = 2e-4;
     a->maxTimeCells = (int)(a->tf/a->dt);
    
 }
@@ -99,7 +98,7 @@ void initViga(struct viga *a, char *argv[])
     a->dx = atof(argv[7]);
 
     a->x = a->L;
-    a->maxCells = (int)((a->x - a->xf) / a->dx);
+    a->maxCells = (int)(abs(a->x - a->xf) / a->dx);
 
     a->yf = a->W * 0.5;
     a->y = -1 * a->yf;
@@ -167,10 +166,11 @@ void printAutor()
 
     void printData(void *filePointer, struct viga *a)
     {
-        //double coeff =1;
-        double coeff = coefficient(a) * (a->L / a->m);
-        coeff /= dx4(a);
-        //   printf("\n%.2e", coeff);
+        double coeff =1;
+        	coeff =coefficient(a);
+           coeff *= (a->L / a->m);
+        	coeff /= dx4(a);
+        // printf("\n%.2e\t%.2e", coeff, a->X[0][a->k_iter]);
 
         char *content = "%.3lf\t%.2e\t%.1lf\t%.2e\t%.2e\t%.2lf\t%.2e\t%.4lf\t%.2e\t%i\n";
         fprintf((FILE *)filePointer, content, a->x, a->X[0][a->k_iter] * coeff, a->error, a->X[1][a->k_iter], a->y, a->T, a->Fx, a->t, a->I, a->k_iter); //tiempo-vx-vy

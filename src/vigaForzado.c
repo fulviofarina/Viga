@@ -11,6 +11,7 @@ double forcedFunction1(double x, void *vo)
     struct viga *a = (struct viga *)vo;
    
     double coseno = CFase(a->freq ,x,0);
+    if (coseno<0) coseno = 0;
     double res = a->F * coseno;
 
 #if defined(DEBUG_COEFFICIENT)

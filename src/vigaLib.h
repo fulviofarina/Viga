@@ -36,7 +36,7 @@ void initFreqForz(char *aux, struct viga *a);
 void initFuerzaExtremo(char *aux, struct viga *a);
 void initCargaDistr(char *aux, struct viga *a);
 
-void onOff(struct viga *a, double condOn, double condOff, int forcedIndex);
+//void onOff(struct viga *a, double condOn, double condOff, int forcedIndex);
 void initViga(struct viga *a, char *argv[]);
 
 double dx4(struct viga *a);
