@@ -168,8 +168,8 @@ void printAutor()
     {
         double coeff =1;
         	coeff =coefficient(a);
-           coeff *= (a->L / a->m);
-        	coeff /= dx4(a);
+          coeff *= (a->L / a->m);
+       	coeff /= dx4(a);
         // printf("\n%.2e\t%.2e", coeff, a->X[0][a->k_iter]);
 
         char *content = "%.3lf\t%.2e\t%.1lf\t%.2e\t%.2e\t%.2lf\t%.2e\t%.4lf\t%.2e\t%i\n";

@@ -1,6 +1,8 @@
+#include <math.h>
+#include "mathLib.h"
 #include "vigaLib.h"
 #include "vigaForzado.h"
-#include <math.h>
+
 
 double forcedFunctionNULL(double x, void *vo)
 {
@@ -11,7 +13,9 @@ double forcedFunction1(double x, void *vo)
     struct viga *a = (struct viga *)vo;
    
     double coseno = CFase(a->freq ,x,0);
+   
     if (coseno<0) coseno = 0;
+  //  printf("\n%.2lf", coseno);
     double res = a->F * coseno;
 
 #if defined(DEBUG_COEFFICIENT)

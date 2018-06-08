@@ -52,10 +52,13 @@ void limpiaCeldas(double **p, int cellsX, int cellsY)
 {
     for (int i = 0; i < cellsX; i++)
     {
+       // printf("\n");
         for (int k = 0; k < cellsY; k++)
         {
             *(*(p + i) + k) = 0.0;
+           // printf("\t%.2e", p[i][k]);
         }
+     
     }
 }
 void liberaCeldas(double **p, int cells)
