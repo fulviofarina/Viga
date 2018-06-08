@@ -15,8 +15,7 @@ int main(int ar, char* arg[])
       pointType= arg[5];
       pointSize= arg[6];
       stella = atoi(arg[7]);
-      makeGNUPlot( nroOfFiles, filebase, D3, D4, pointType, pointSize,stella);
-	
+      makeGNUPlot(nroOfFiles, filebase, D3, D4, pointType, pointSize, stella, arg[8]);
 
-    return 0;
+      return 0;
 }

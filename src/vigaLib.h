@@ -16,7 +16,8 @@ struct viga
     double m;
     int k_iter; //iterator
                 // double *ci;
-    double *X[4], freq;
+    double **X;
+    double freq;
     double error, fase, Fx, t, dt, tf;
     double x, y, z;
     double dx, dy, dz, xf, yf, zf;
@@ -27,6 +28,7 @@ struct viga
 
 struct viga r;
 
+void printAutor();
 void error(struct viga *a);
 void initTiempo(char *aux, struct viga *a);
 
@@ -34,13 +36,12 @@ void initFreqForz(char *aux, struct viga *a);
 void initFuerzaExtremo(char *aux, struct viga *a);
 void initCargaDistr(char *aux, struct viga *a);
 
-void liberaCeldas(struct viga *a);
-
-void printData(void *filePointer, struct viga *a);
 void onOff(struct viga *a, double condOn, double condOff, int forcedIndex);
 void initViga(struct viga *a, char *argv[]);
-void initCeldas(struct viga *a);
-void limpiaCeldas(struct viga *a);
+
+double dx4(struct viga *a);
 double inertia(struct viga *a);
 double coefficient(struct viga *a);
+
+void printData(void *filePointer, struct viga *a);
 void printInitViga(struct viga *a);

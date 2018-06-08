@@ -1,5 +1,6 @@
 #include "file.h"
 #include "gnu.h"
+#include "mathLib.h"
 #include "vigaLib.h"
 #include "vigaForzado.h"
 #include "vigaEDO.h"
@@ -17,30 +18,29 @@
 int main(int ar, char *argv[])
 {
 	initEDOs();
-
 	initForzado();
-
 	initViga(&r, argv);
 	
-	initCeldas(&r);
-	limpiaCeldas(&r);
+	r.X = initCeldas(equ,r.maxCells);
+	limpiaCeldas(r.X,equ,r.maxCells);
 
+	printAutor();
 	printInitViga(&r); //tiempo-vx-vy
 
-	int PRINT_BAR = (r.maxCells)/100;
+	
 
 	r.mainfp = openFile(r.FILENAME, "w");
 
-	int files = bucleT(PRINT_BAR, &r);
+	int files = bucleT( &r);
 
 	closeFile(r.mainfp);
 
-	liberaCeldas(&r);
+	liberaCeldas(r.X,equ);
 
 	printf("\n");
 
 	//////////////////////////////////////////////
-	makeGNUPlot(files, r.FILENAME, D3, D4, "1", "0.3", 0);
+	//makeGNUPlot(files, r.FILENAME, D3, D4, "1", "0.3", 0);
 
 	return 0;
 }

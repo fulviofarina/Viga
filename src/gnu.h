@@ -7,6 +7,8 @@
 
 struct gnuObject
 {
+   
+    char *gifFile;
     int surface;
     char *treeD;
     char *fourD;
@@ -21,6 +23,7 @@ void deleteAuxiliarFile();
 void initGNUPlot(char *treeD, char *fourD, char *pointType, char *pointSize);
 void chooseD();
 void addPlot(char *fileToPlot, char *auxiliarscriptfile);
-//void composeGNUFile();
-void makeGNUScript(int nrOfFiles, char *basefileName,char *auxiliarscriptfile, int stella);
-void makeGNUPlot( int nroOfFiles, char* filebase, char* D3, char *D4, char *pointType, char *pointSize, int stella);
+void setGIFOutput(char *gnuscriptFile, char *PlotName, char *plotType);
+    //void composeGNUFile();
+    void makeGNUScript(int nrOfFiles, char *filenameroot, char *scriptauxiliar, int stella);
+    void makeGNUPlot(int nroOfFiles, char *filenameroot, char *D3, char *D4, char *pointType, char *pointSize, int stella, char *plotName);

@@ -11,7 +11,7 @@ void deleteAuxiliarFile()
          fclose(fp2);
 }
 
-void makeGNUPlot(int nroOfFiles, char* filenameroot, char* D3, char *D4, char *pointType, char *pointSize, int stella)
+void makeGNUPlot(int nroOfFiles, char* filenameroot, char* D3, char *D4, char *pointType, char *pointSize, int stella, char *plotName)
 {
 
      deleteAuxiliarFile();
@@ -20,12 +20,14 @@ void makeGNUPlot(int nroOfFiles, char* filenameroot, char* D3, char *D4, char *p
 
     gnu.surface = 1;
     chooseD();
-    makeGNUScript(nroOfFiles, filenameroot,gnuscriptFile2,stella);
+    setGIFOutput(gnuscriptFile2, plotName, gnu.gifFile);
+    makeGNUScript(nroOfFiles, filenameroot, gnuscriptFile2, stella);
     mergeFiles(gnu.baseFile, gnuscriptFile2, gnu.finalFile);
    
     gnu.surface = 0;
     chooseD();
-    makeGNUScript(nroOfFiles, filenameroot,gnuscriptFile1,stella);
+    setGIFOutput(gnuscriptFile1, plotName, gnu.gifFile);
+    makeGNUScript(nroOfFiles, filenameroot, gnuscriptFile1, stella);
     mergeFiles(gnu.baseFile, gnuscriptFile1, gnu.finalFile);
  
 }
@@ -43,14 +45,30 @@ void chooseD()
     gnu.toUseD = gnu.treeD;
     gnu.baseFile = gnuPlotBaseFile;
     gnu.finalFile = gnuPlotFinalFile;
+    gnu.gifFile = "Plot.gif";
     if (gnu.surface == 1)
     {
+        gnu.gifFile = "Surface.gif";
         gnu.toUseD = gnu.fourD;
         gnu.finalFile = gnuSurfaceFinalFile;
         gnu.baseFile = gnuSurfaceBaseFile;
     }
 }
+void setGIFOutput(char *gnuscriptFile, char *PlotName, char *plotType)
+{
+    FILE *fp = fopen(gnuscriptFile, "a");
+    char *strin = "set output ";
+    //pics/Plot.gif'";
+    fprintf(fp, strin);
+    char * p = "\"";
+    fprintf(fp, p);
+    fprintf(fp, PlotName);
+    fprintf(fp, plotType);
+    fprintf(fp, p);
+    fprintf(fp, "\n");
+    fclose(fp);
 
+}
 void addPlot(char *fileToPlot, char * gnuscriptFile)
 {
   
@@ -76,6 +94,8 @@ void addPlot(char *fileToPlot, char * gnuscriptFile)
 //1
 void makeGNUScript(int nrOfFiles, char *filenameroot, char *scriptauxiliar, int stella)
 {
+
+  
     char *lastFile = FULL_SIZE;
     char *aux_ext = "m";
     for (int i = 0; i <= nrOfFiles; i++) //loop del algoritmo

@@ -7,7 +7,7 @@ set linkerflags=/OUT:makegnu.exe
 cl.exe %compilerflags% gnu.c gnuProg.c file.c /link %linkerflags%
 
 REM d
-makegnu.exe 50 "files/viga" "1:2:7" "1:8:2:7" "1" "1" 0
+makegnu.exe 50 "files/viga" "1:2:1" "1:5:2:1" "1" "1" 0 "pics/viga"
 
 gnuplot gnuPlot.gnu
 gnuplot gnuSurface.gnu

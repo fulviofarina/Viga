@@ -9,26 +9,32 @@
 void bucleY(struct viga *a)
 {
 	a->y = -1 * a->yf;
-	for (int i = 0; a->y <= a->yf; i++) //loop del algoritmo
+	//	for (int i = 0; a->y <= a->yf; i++) //loop del algoritmo
 	{
 		printData(a->fp, a);
 		printData(a->mainfp, a);
-		a->y += a->dy;
+		//	a->y += a->dy;
 	}
 }
-void bucleX(int printEach, struct viga *a)
+void bucleX(int printEach, struct viga *a, int t_iter)
 {
 	int printer = printEach;
 
 	for (a->k_iter = 0; a->k_iter < a->maxCells; a->k_iter++) //loop del algoritmo
 	{
 		solve(a);
-		error(a);
+		//error(a);
 
-		if (printer == printEach)
+		if (printer > 0)
 		{
-			bucleY(a);
-			printer = 0;
+			if (printer == printEach)
+			{
+				char *fileData = getFileName(t_iter, a->FILENAME);
+				a->fp = openFile(fileData, "a");
+				bucleY(a);
+				closeFile(a->fp);
+				printer = 0;
+			}
 		}
 		printer++;
 
@@ -36,38 +42,52 @@ void bucleX(int printEach, struct viga *a)
 	}
 }
 
-int bucleT(double printEach, struct viga *a)
+int bucleT(struct viga *a)
 {
+	int PRINT_BARX = (r.maxCells) / 30;
+	PRINT_BARX--;
+	int PRINT_BART = r.maxTimeCells / 40;
+	PRINT_BART--;
+		int when = 0;
+
+	int whenX = 0;
 	//desactiva fuerza
 	int forcedIndex = a->forcedIndex;
 	a->forcedIndex = 0;
-
+	int t_iter = 0;
 	//salva el x0 inicial
 	double x0 = a->x;
 
 	int i = 0;
 	for (i = 0; i < a->maxTimeCells; i++) //loop del algoritmo
 	{
-		char *fileData = getFileName(i, a->FILENAME);
-		a->fp = openFile(fileData, "w");
 
 		a->t = i * a->dt;
 
-		double off = (a->maxTimeCells * 0.20) * a->dt;
-		double on = (a->maxTimeCells * 0.05) * a->dt;
+		//double off = (a->maxTimeCells * 0.60) * a->dt;
+
+		double off = (a->maxTimeCells * 0.3) * a->dt;
+		double on = (a->maxTimeCells * 0.15) * a->dt;
 		onOff(a, on, off, forcedIndex);
 
 		a->x = x0;
-		bucleX(printEach, a);
 
-		closeFile(a->fp);
+		whenX = -1 * PRINT_BARX;
+		if (when == PRINT_BART)
+		{
+			whenX = PRINT_BARX;
+			t_iter++;
+			when = 0;
+		}
+		when++;
+		bucleX(whenX, a, t_iter);
 	}
 
-	return i - 1; //number of files made
+	return t_iter - 1; //number of files made
 }
 double diffinitas(void *p)
 {
-    struct viga *a = (struct viga*)p;
+	struct viga *a = (struct viga *)p;
 
 	double w2 = 6 * a->X[0][a->k_iter];
 	//if (h == 1)
@@ -124,17 +144,17 @@ double edo2(double t, double z, double x, double (*forced)(double, void *), void
 
 	double w2 = diffinitas(a);
 
-	double wterm = (a->dx * a->dx * a->dx * a->dx);
+	double wterm = dx4(a);
 
 	//	if (h == 1)
 	//	printf("\ndx4= %.2e\n", wterm);
 	wterm /= EI;
 
 	//	if (h == 1)
-	//printf("\ndx4/EI= %.2e\n", wterm);
 
 	double Q = wterm * (a->Fx + a->qL);
 
+	//printf("\nFx= %.2e\n", a->qL);
 	//	if (h == 1)
 	//		printf("\nwterm*q= %.2e\n", Q);
 	Q = Q - w2;
@@ -150,9 +170,14 @@ double edo2(double t, double z, double x, double (*forced)(double, void *), void
 	printf("p= %.2e\n", p);
 
 #endif
+
+
+//	coeff = sqrt(coeff);
+
+
 	//double k = (10 / EI);
 	//	k *= (a->X[0][a->k_iter]);
-	return Q;
+	return Q ;
 }
 //1st and 2nd argumento como en el algoritmo de RK4
 double edo1(double x, double z, double t, double (*forced)(double, void *), void *vo) //sistema de EDOs 1er orden acopladas
@@ -172,11 +197,13 @@ void initEDOs()
 void solve(void *vo)
 {
 	struct viga *a = (struct viga *)vo;
+	
+
 	if (a->k_iter < a->maxCells - 1)
 	{
-		for (int k = equ-1; k >= 0; k--)
+		for (int k = equ - 1; k >= 0; k--)
 		{
-			a->X[k][a->k_iter+1 ] = a->X[k][a->k_iter] + RK4(a->t, a->X[k][a->k_iter], a->dt, a->x, edoAUsar[k], forzado[a->forcedIndex], a);
+			a->X[k][a->k_iter + 1] = a->X[k][a->k_iter] + RK4(a->t, a->X[k][a->k_iter], a->dt , a->x, edoAUsar[k], forzado[a->forcedIndex], a);
 		}
 	}
 }

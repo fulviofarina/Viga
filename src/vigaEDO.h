@@ -4,8 +4,8 @@
 
 double (*edoAUsar[equ])(double, double, double, double (*)(double, void *), void *);
 void bucleY(struct viga *a);
-void bucleX(int printEach, struct viga *a);
-int bucleT(double printEach, struct viga *a);
+void bucleX(int printEach, struct viga *a, int t_iter);
+int bucleT( struct viga *a);
 double diffinitas(void *p);
 
 
