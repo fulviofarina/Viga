@@ -3,6 +3,7 @@
 #include "vigaLib.h"
 #include "vigaForzado.h"
 
+int iter = 0;
 
 double forcedFunctionNULL(double x, void *vo)
 {
@@ -31,18 +32,29 @@ double forcedFunction1(double x, void *vo)
 double forcedFunction2(double x, void *vo)
 {
     struct viga *a = (struct viga *)vo;
+    if (x<0) return 0;
     return a->F * sin(a->freq * x) / x;
+}
+
+
+double forcedFunction4(double x, void *vo)
+{
+    struct viga *a = (struct viga *)vo;
+    double tau = (2*M_PI)/a->freq;
+double toReturn = 0;
+iter++;
+if (iter*a->dt >= tau )
+{
+    toReturn = a->F;
+    iter = 0;
+}
+
+return toReturn;
 }
 double forcedFunction3(double x, void *vo)
 {
     struct viga *a = (struct viga *)vo;
-
-    return x * x + a->F * x;
-}
-double forcedFunction4(double x, void *vo)
-{
-    struct viga *a = (struct viga *)vo;
-    return a->F * exp(-1 * a->freq * x);
+    return a->F * exp(-1 * a->freq* a->freq * x*x);
 }
 
 void initForzado()

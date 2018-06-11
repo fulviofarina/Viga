@@ -46,7 +46,7 @@ int bucleT(struct viga *a)
 {
 	int PRINT_BARX = (r.maxCells) / 50;
 	PRINT_BARX--;
-	int PRINT_BART = r.maxTimeCells / 100;
+	int PRINT_BART = r.maxTimeCells / 300;
 	PRINT_BART--;
 		int when = 0;
 
@@ -237,12 +237,10 @@ double edo3(double t, double z, double x, double (*forced)(double, void *), void
 	//printf("\ncoeff= %.2e\twterm= %.2e\tQ= %.2e\tw2= %.2e\n", coeff, wterm, Q, w2);
 	//printf("\n%.2e\t%.2e\t%.2e", wterm, Q, w2);
 	//printf("\nFx= %.2e\n", a->qL);
-	//	if (h == 1)
-	//		printf("\nwterm*q= %.2e\n", Q);
+
 	Q = (Q*wterm) - w2;
 
-	//	if (h == 1)
-	//		printf("\nq-w2= %.2e\n", Q);
+	
 
 //#if defined(DEBUG_COEFFICIENT)
 	
@@ -298,10 +296,10 @@ void solve2(void *vo)
 		double derv = (a->X[1][a->k_iter]) * a->dt;
 		double new =  old + derv + aux;
 
-		a->X[0][a->k_iter ]=new;
-		a->X[1][a->k_iter ] = (new - old);
-		a->X[1][a->k_iter] /= a->dt;
-		derv = a->X[1][a->k_iter] ;
+		a->X[0][a->k_iter+1 ]=new;
+		derv = (new - old);
+		a->X[1][a->k_iter+1] =derv/ a->dt;
+		//derv = a->X[1][a->k_iter+1] ;
 	//	printf("\nnew= %.2e\told= %.2e\taux= %.2e\tderv= %.2e\ti= %i\n", new, old, aux, derv, a->k_iter);
 	//	getch();
 	}
