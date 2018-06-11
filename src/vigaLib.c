@@ -98,7 +98,7 @@ void initViga(struct viga *a, char *argv[])
     a->dx = atof(argv[7]);
 
     a->x = a->L;
-    a->maxCells = (int)(abs(a->x - a->xf) / a->dx);
+    a->maxCells = (int)((a->x - a->xf) / a->dx);
 
     a->yf = a->W * 0.5;
     a->y = -1 * a->yf;
@@ -149,7 +149,7 @@ void printAutor()
         printf("\n****** DATOS ******\n");                                                                      //tiempo-vx-vy
         printf("\nModulo de Young (N/m2)\nE= %.2e\nAncho\tW= %.2e (m)\nAlto\tH= %.2e (m)\n", a->E, a->W, a->H); //tiempo-vx-vy
         printf("\nCondiciones iniciales:\n");
-        printf("\nx inicial= %.3lf (m)\tx final= %.3lf (m)\tpaso dx= %.3lf (m)\n", a->x, a->xf, a->dx); //tiempo-vx-vy
+        printf("\nx inicial= %.2e (m)\tx final= %.2e (m)\tpaso dx= %.2e (m)\n", a->x, a->xf, a->dx); //tiempo-vx-vy
 
         printf("w= %.2e (m)\tdwdt= %.2e (m/s)\n", a->X[0][a->k_iter], a->X[1][a->k_iter]); //tiempo-vx-vy
                                                                                            //  printf("\nCondiciones iniciales:\nw= %.2e (m)\ndwdx= %.2e\ndwdx2= %.2e\ndwdx3= %.2e\n", a->X[0][a->k_iter], a->X[1][a->k_iter], a->X[2][a->k_iter], a->X[3][a->k_iter]); //tiempo-vx-vy
@@ -172,6 +172,6 @@ void printAutor()
        	coeff /= dx4(a);
         // printf("\n%.2e\t%.2e", coeff, a->X[0][a->k_iter]);
 
-        char *content = "%.3lf\t%.2e\t%.1lf\t%.2e\t%.2e\t%.2lf\t%.2e\t%.4lf\t%.2e\t%i\n";
+        char *content = "%.2e\t%.2e\t%.2e\t%.2e\t%.2e\t%.2e\t%.2e\t%.4lf\t%.2e\t%i\n";
         fprintf((FILE *)filePointer, content, a->x, a->X[0][a->k_iter] * coeff, a->error, a->X[1][a->k_iter], a->y, a->T, a->Fx, a->t, a->I, a->k_iter); //tiempo-vx-vy
     }
