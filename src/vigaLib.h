@@ -1,8 +1,9 @@
 
+#define kapa  0.83333333333333333333333333333333
 
 #define gravedad 9.81
 #define M_PI 3.1415
-#define equ 2
+#define equ 4
 //#define DEBUG_COEFFICIENT 1
 
 struct viga
@@ -11,7 +12,7 @@ struct viga
     double T;
     int maxTimeCells;
 
-    double F, E, I, L, W, H, Vol, Area, ro;
+    double F, E, G, I, L, W, H, Vol, Area, ro;
     double qL;
     double m;
     int k_iter; //iterator
@@ -29,19 +30,20 @@ struct viga
 struct viga r;
 
 void printAutor();
-void error(struct viga *a);
+
 void initTiempo(char *aux, struct viga *a);
 
 void initFreqForz(char *aux, struct viga *a);
 void initFuerzaExtremo(char *aux, struct viga *a);
 void initCargaDistr(char *aux, struct viga *a);
+double beta(struct viga *a);
+double alpha(struct viga *a);
+double coeff(struct viga *a);
 
 //void onOff(struct viga *a, double condOn, double condOff, int forcedIndex);
 void initViga(struct viga *a, char *argv[]);
 
 double dx4(struct viga *a);
 double inertia(struct viga *a);
-double coefficient(struct viga *a);
 
-void printData(void *filePointer, struct viga *a);
-void printInitViga(struct viga *a);
+

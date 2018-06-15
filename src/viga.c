@@ -1,18 +1,12 @@
+#include <string.h>
+#include <stdio.h>
+#include <math.h>
 #include "file.h"
-#include "gnu.h"
 #include "mathLib.h"
 #include "vigaLib.h"
 #include "vigaForzado.h"
 #include "vigaEDO.h"
-
-#define D3 "1:2:1"
-#define D4 "1:5:2:1"
-
-#include <string.h>
-#include <stdio.h>
-
-
-
+#include "vigaEngine.h"
 
 
 int main(int ar, char *argv[])

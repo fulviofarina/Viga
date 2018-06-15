@@ -1,6 +1,6 @@
 
 
-#define equForzado 5
+#define equForzado 6
 
 
 double (*forzado[equForzado])(double, void *);

@@ -3,7 +3,7 @@
 #include "vigaLib.h"
 #include "vigaForzado.h"
 
-int iter = 0;
+double iter = 0;
 
 double forcedFunctionNULL(double x, void *vo)
 {
@@ -16,7 +16,7 @@ double forcedFunction1(double x, void *vo)
     double coseno = CFase(a->freq ,x,0);
    
     if (coseno<0) coseno = 0;
-  //  printf("\n%.2lf", coseno);
+  // printf("\n%.2lf", coseno);
     double res = a->F * coseno;
 
 #if defined(DEBUG_COEFFICIENT)
@@ -40,15 +40,15 @@ double forcedFunction2(double x, void *vo)
 double forcedFunction4(double x, void *vo)
 {
     struct viga *a = (struct viga *)vo;
-    double tau = (2*M_PI)/a->freq;
+    double tau = 1/a->freq;
 double toReturn = 0;
-iter++;
-if (iter*a->dt >= tau )
+
+if (a->t >= tau+ iter  )
 {
     toReturn = a->F;
-    iter = 0;
+    iter = a->t;
 }
-
+//if (toReturn<0) printf("\n%.2lf", toReturn);
 return toReturn;
 }
 double forcedFunction3(double x, void *vo)
@@ -56,7 +56,15 @@ double forcedFunction3(double x, void *vo)
     struct viga *a = (struct viga *)vo;
     return a->F * exp(-1 * a->freq* a->freq * x*x);
 }
+double forcedFunction5(double x, void * vo)
+{
+    struct viga *a = (struct viga *)vo;
 
+    double coseno = CFase(a->freq, x, 0);
+    double res = a->F * coseno;
+    if (a->t > 0.7*a->maxTimeCells*a->dt) res = 0;
+    return res;
+}
 void initForzado()
 {
        
@@ -65,4 +73,5 @@ void initForzado()
     forzado[2] = forcedFunction2;
     forzado[3] = forcedFunction3;
     forzado[4] = forcedFunction4;
+    forzado[5] = forcedFunction5;
 }

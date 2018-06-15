@@ -1,121 +1,46 @@
-#include "file.h"
+
 #include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include "rk4.h"
 #include "mathLib.h"
 #include "vigaLib.h"
 #include "vigaForzado.h"
 #include "vigaEDO.h"
 
-void bucleY(struct viga *a)
-{
-	a->y = -1 * a->yf;
-	//	for (int i = 0; a->y <= a->yf; i++) //loop del algoritmo
-	{
-		printData(a->fp, a);
-		printData(a->mainfp, a);
-		//	a->y += a->dy;
-	}
-}
-void bucleX(int printEach, struct viga *a, int t_iter)
-{
-	int printer = printEach;
-
-	for (a->k_iter = 0; a->k_iter < a->maxCells; a->k_iter++) //loop del algoritmo
-	{
-		solve(a);
-		//error(a);
-
-		if (printer > 0)
-		{
-			if (printer == printEach)
-			{
-				char *fileData = getFileName(t_iter, a->FILENAME);
-				a->fp = openFile(fileData, "a");
-				bucleY(a);
-				closeFile(a->fp);
-				printer = 0;
-			}
-		}
-		printer++;
-
-		a->x -= a->dx;
-	}
-}
-
-int bucleT(struct viga *a)
-{
-	int PRINT_BARX = (r.maxCells) / 50;
-	PRINT_BARX--;
-	int PRINT_BART = r.maxTimeCells / 300;
-	PRINT_BART--;
-		int when = 0;
-
-	int whenX = 0;
-	//desactiva fuerza
-	int forcedIndex = a->forcedIndex;
-//	a->forcedIndex = 0;
-	int t_iter = 0;
-	//salva el x0 inicial
-	double x0 = a->x;
-
-	int i = 0;
-	for (i = 0; i < a->maxTimeCells; i++) //loop del algoritmo
-	{
-
-		a->t = i * a->dt;
-		a->x = x0;
-
-		whenX = -1 * PRINT_BARX;
-		if (when == PRINT_BART)
-		{
-			whenX = PRINT_BARX;
-			t_iter++;
-			when = 0;
-		}
-		when++;
-		bucleX(whenX, a, t_iter);
-	}
-
-	return t_iter - 1; //number of files made
-}
 double diffinitas(void *p)
 {
 	struct viga *a = (struct viga *)p;
 
-	double w0=0;
-	double w2,w1,w2_,w1_;
-	w2=0;
-	w1=0;
-	w2_=0;
-	w1_=0;
+	double w0 = 0;
+	double w2, w1, w2_, w1_;
+	w2 = 0;
+	w1 = 0;
+	w2_ = 0;
+	w1_ = 0;
 
-   double coeff = 1;
-//	coeff = coefficient(a) ;
-//coeff*= (a->L / a->m);
-//	coeff /= dx4(a);
-
-	
+	double coeff = 1;
+	//	coeff = coefficient(a) ;
+	//coeff*= (a->L / a->m);
+	//	coeff /= dx4(a);
 
 	w0 = 6 * a->X[0][a->k_iter] * coeff;
 
-	
 	if (a->k_iter < a->maxCells - 2)
 	{
-		w2 = a->X[0][a->k_iter + 2] *coeff;
+		w2 = a->X[0][a->k_iter + 2] * coeff;
 	}
 
-	
 	if (a->k_iter < a->maxCells - 1)
 	{
 		w1 = (-4) * a->X[0][a->k_iter + 1] * coeff;
 	}
 
-
 	if (a->k_iter >= 2)
 	{
 		w2_ += a->X[0][a->k_iter - 2] * coeff;
 	}
-	
+
 	if (a->k_iter >= 1)
 	{
 		w1_ = (-4) * a->X[0][a->k_iter - 1] * coeff;
@@ -135,126 +60,119 @@ double diffinitas(void *p)
 
 	return sum;
 }
-//1st and 2nd argumento como en el algoritmo de RK4
-double edo2(double t, double z, double x, double (*forced)(double, void *), void *vo) //sistema de EDOs 1er orden acopladas
+
+double diffinitas2(void *p)
 {
-	struct viga *a = (struct viga *)vo;
+	struct viga *a = (struct viga *)p;
 
-	a->Vol = volume(&a->H, &a->W, &a->L);
-	a->I = inertia(a);
-	double EI = coefficient(a);
-	a->m = mass(&a->ro, &a->Vol);
+	double w0 = 0;
+	double  w1,  w1_;
 
-	if (a->norm == 1)
-	{
-		a->F = EI;
-	}
-
-
-	a->Fx = forced(t, a);
-
-
-	double h = heaviside(&x, &a->L);
-	a->Fx *= h;
-
-	double w2 = diffinitas(a);
-
-	double wterm = 1;
-	wterm = dx4(a);
-	wterm /= EI;
-
-	double coeff =1;
-//	coeff =coefficient(a) ;
-//	coeff *= (a->L / a->m);
-//	coeff /= dx4(a);
-
-			double Q = (a->Fx + a->qL);
-
-	Q *= coeff *wterm ;
-
-		//printf("\n%.2e\t%.2e\t%.2e", wterm, Q, w2);
-		//printf("\nFx= %.2e\n", a->qL);
-		//	if (h == 1)
-		//		printf("\nwterm*q= %.2e\n", Q);
-	Q = Q - w2;
-
-	//	if (h == 1)
-	//		printf("\nq-w2= %.2e\n", Q);
-
-#if defined(DEBUG_COEFFICIENT)
-		printf("\ncoeff*wterm=invMassDens= %.2e\tQ= %.2e\tw2= %.2e\n", coeff * wterm, Q, w2);
-
-#endif
-
-
-//	coeff = sqrt(coeff);
-
+	w1 = 0;
 	
-	//double k = (10 / EI);
-	//	k *= (a->X[0][a->k_iter]);
-	//printf("\n%.2e\t%.2e", coeff, Q);
-
-	return Q ;
-}
-
-double edo3(double t, double z, double x, double (*forced)(double, void *), void *vo) //sistema de EDOs 1er orden acopladas
-{
-	struct viga *a = (struct viga *)vo;
-
-	a->Vol = volume(&a->H, &a->W, &a->L);
-	a->I = inertia(a);
-	double EI = coefficient(a);
-	a->m = mass(&a->ro, &a->Vol);
-
-	if (a->norm == 1)
-	{
-		a->F = EI;
-	}
-
-#if defined(TIME)
-	a->Fx = forced(t, a);
-#else
-	a->Fx = forced(x, a);
-#endif
-
-	double h = heaviside(&x, &a->L);
-	a->Fx *= h;
-
-	double w2 = diffinitas(a);
-
-	double wterm = 1;
-	wterm = dx4(a);
-	wterm /= EI;
+	w1_ = 0;
 
 	double coeff = 1;
-		coeff =coefficient(a) ;
-		coeff *= (a->L / a->m);
-		coeff /= dx4(a);
+	//	coeff = coefficient(a) ;
+	//coeff*= (a->L / a->m);
+	//	coeff /= dx4(a);
+
+	w0 = -1*2 * a->X[2][a->k_iter] * coeff;
+
+	
+
+	if (a->k_iter < a->maxCells - 1)
+	{
+		w1 =  a->X[2][a->k_iter + 1] * coeff;
+	}
+
+
+
+	if (a->k_iter >= 1)
+	{
+		w1_ =  a->X[2][a->k_iter - 1] * coeff;
+	}
+
+	double sum = (w0 + w1 + w1_ );
+#if defined(DEBUG_COEFFICIENT)
+	printf("\ncoeff = %.2e\t", coeff);
+	printf("w0 = %.2e\t", w0);
+	
+	printf("w1 = %.2e\t", w1);
+
+	printf("w1_ = %.2e\t", w1_);
+	printf("k = %i\t", a->k_iter);
+	printf("sum = %.2e\t", sum);
+#endif
+
+	return sum;
+}
+//1st and 2nd argumento como en el algoritmo de RK4
+double edo4(double t, double z, double x, double (*forced)(double, void *), void *vo) //sistema de EDOs 1er orden acopladas
+{
+	struct viga *a = (struct viga *)vo;
+
+	a->Vol = volume(&a->H, &a->W, &a->L);
+	a->I = inertia(a);
+	double EI = a->E*a->I;
+	a->m = mass(&a->ro, &a->Vol);
+	double bet = beta(a);
+	double alph = alpha(a);
+
+
+		if (a->norm == 1)
+	{
+		a->F = EI;
+	}
+
+	a->Fx = forced(t, a);
+
+	double h = heaviside(&x, &a->L);
+	a->Fx *= h;
+
+	
+
+
+    double mu = (a->m/a->L);
+	double aux = diffinitas(a);
 
 	double Q = (a->Fx + a->qL);
+	Q -= (aux*alph);
+	Q -= (mu*(a->X[2][a->k_iter]));
 	
-
-	//printf("\ncoeff= %.2e\twterm= %.2e\tQ= %.2e\tw2= %.2e\n", coeff, wterm, Q, w2);
-	//printf("\n%.2e\t%.2e\t%.2e", wterm, Q, w2);
-	//printf("\nFx= %.2e\n", a->qL);
-
-	Q = (Q*wterm) - w2;
-
 	
+	double m2 = (bet/ a->ro);
 
-//#if defined(DEBUG_COEFFICIENT)
-	
+	double dx2 = (a->dx * a->dx);
 
-//#endif
+	double coef = (bet * a->I);
+   	coef += (a->Area * dx2*dx2 * alph);
+	coef /= dx2;
+	coef/=m2;
 
-	//	coeff = sqrt(coeff);
+	double dif2 = diffinitas2(a);
 
-	//double k = (10 / EI);
-	//	k *= (a->X[0][a->k_iter]);
-	//printf("\n%.2e\t%.2e", coeff, Q);
+	coef *= dif2;
 
-	return Q * coeff;
+	//Q *= m2;
+
+	Q+=coef;
+//	Q*=1e-12;
+//	Q/= a->I;
+//	Q/= mu;
+
+
+#if defined(DEBUG_COEFFICIENT)
+	printf("\ncoeff= %.2e\tQ= %.2e\tdif1= %.2e\tm2= %.2e\tdif2= %.2e\tFx= %.2e\talpha= %.2e\tx= %.2e\n", coef, Q, aux, m2, dif2, a->Fx, alph, a->x);
+	//	getchar();
+
+#endif
+
+
+	return Q;
 }
+
+
 //1st and 2nd argumento como en el algoritmo de RK4
 double edo1(double x, double z, double t, double (*forced)(double, void *), void *vo) //sistema de EDOs 1er orden acopladas
 {
@@ -262,10 +180,23 @@ double edo1(double x, double z, double t, double (*forced)(double, void *), void
 	return a->X[1][a->k_iter];
 }
 
+//1st and 2nd argumento como en el algoritmo de RK4
+double edo2(double x, double z, double t, double (*forced)(double, void *), void *vo) //sistema de EDOs 1er orden acopladas
+{
+	struct viga *a = (struct viga *)vo;
+	return a->X[2][a->k_iter];
+}
+double edo3(double x, double z, double t, double (*forced)(double, void *), void *vo) //sistema de EDOs 1er orden acopladas
+{
+	struct viga *a = (struct viga *)vo;
+	return a->X[3][a->k_iter];
+}
 void initEDOs()
 {
 	edoAUsar[0] = edo1; //edo fuerte
 	edoAUsar[1] = edo2; //variables de estado
+	edoAUsar[2] = edo3; //edo fuerte
+	edoAUsar[3] = edo4; //variables de estado
 						//	edoAUsar[2] = edo3; //variables de stado
 						//edoAUsar[3] = edo4; //variables de estado
 }
@@ -273,34 +204,12 @@ void initEDOs()
 void solve(void *vo)
 {
 	struct viga *a = (struct viga *)vo;
-	
-
-	if (a->k_iter < a->maxCells - 1 )
-	{
-		for (int k = equ - 1; k >= 0; k--)
-		{
-			a->X[k][a->k_iter+1 ] = a->X[k][a->k_iter] + Euler(a->t, a->X[k][a->k_iter], a->dt , a->x, edoAUsar[k], forzado[a->forcedIndex], a);
-		}
-	}
-}
-void solve2(void *vo)
-{
-	struct viga *a = (struct viga *)vo;
 
 	if (a->k_iter < a->maxCells - 1)
 	{
-		double old = a->X[0][a->k_iter] ;
-	//	double old_1 = a->X[0][a->k_iter + 1];
-		double aux = a->dt * a->dt * 0.5 ;
-		aux *= edo3(a->t, a->X[0][a->k_iter], a->x, forzado[a->forcedIndex], a) ;
-		double derv = (a->X[1][a->k_iter]) * a->dt;
-		double new =  old + derv + aux;
-
-		a->X[0][a->k_iter+1 ]=new;
-		derv = (new - old);
-		a->X[1][a->k_iter+1] =derv/ a->dt;
-		//derv = a->X[1][a->k_iter+1] ;
-	//	printf("\nnew= %.2e\told= %.2e\taux= %.2e\tderv= %.2e\ti= %i\n", new, old, aux, derv, a->k_iter);
-	//	getch();
+		for (int k = equ - 1; k >= 0; k--)
+		{
+			a->X[k][a->k_iter+1 ] = a->X[k][a->k_iter] + RK4(a->t, a->X[k][a->k_iter], a->dt, a->x, edoAUsar[k], forzado[a->forcedIndex], a);
+		}
 	}
 }

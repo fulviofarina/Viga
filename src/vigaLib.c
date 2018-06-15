@@ -7,15 +7,6 @@
 #include "vigaLib.h"
 
 
-void error(struct viga *a)
-{
-    a->error = 1;
-    if (a->error != 0.0)
-    {
-        a->error = (a->X[0][a->k_iter] - a->error) * 100 / a->error;
-    }
-}
-
 double inertia(struct viga *a)
 {
     return a->W * a->H * a->H * a->H / 12;
@@ -23,17 +14,7 @@ double inertia(struct viga *a)
 
 
 
-    void onOff(struct viga * a, double condOn, double condOff, int forcedIndex)
-    {
-        if (a->t > condOn)
-        {
-            a->forcedIndex = forcedIndex;
-        }
-        if (a->t > condOff)
-        {
-            a->forcedIndex = 0;
-        }
-    }
+  
 
     void initFuerzaExtremo(char *aux, struct viga *a)
     {
@@ -89,16 +70,17 @@ void initViga(struct viga *a, char *argv[])
     a->error = 0;
 
     a->FILENAME = argv[1];
-    a->E = atof(argv[2]); //GPa for Iron
+    a->E = atof(argv[12]); //GPa for Iron
     a->L = atof(argv[3]);
     a->W = atof(argv[4]);
     a->H = atof(argv[5]);
+    a->G = atof(argv[13]);
 
     a->xf = atof(argv[6]);
-    a->dx = atof(argv[7]);
+    a->maxCells = atoi(argv[7]);
 
     a->x = a->L;
-    a->maxCells = (int)((a->x - a->xf) / a->dx);
+    a->dx = ((a->x - a->xf) / a->maxCells);
 
     a->yf = a->W * 0.5;
     a->y = -1 * a->yf;
@@ -111,18 +93,18 @@ void initViga(struct viga *a, char *argv[])
    
   
 //en este orden
-    a->ro = atof(argv[11]);
+    a->ro = atof(argv[14]);
     a->Vol = volume(&a->H, &a->W, &a->L);
     a->Area = area(&a->H, &a->W);
     a->m = mass(&a->ro, &a->Vol);
 
-    initTiempo(argv[9], a);
+    initTiempo(argv[2], a);
     //en este orden
-    initFreqForz(argv[10], a);
+    initFreqForz(argv[9], a);
 
-    initCargaDistr(argv[12], a);
+    initCargaDistr(argv[10], a);
 
-    a->forcedIndex = atoi(argv[13]);
+    a->forcedIndex = atoi(argv[11]);
 }
 
 
@@ -130,11 +112,7 @@ double dx4 (struct viga *a)
 {
     return (a->dx * a->dx * a->dx * a->dx);
 }
-double coefficient(struct viga *a)
-{
-    double coeff = a->I * a->E;
-    return coeff;
-}
+
 void printAutor()
 {
     printf("\n****** Simulacion de viga en voladizo ******\n");
@@ -142,36 +120,23 @@ void printAutor()
     printf("\n****** carne: 16-90516 ******");
     printf("\n****** email: fulviofarina@usb.ve ******\n\n");
 }
-    void printInitViga(struct viga * a)
+
+double beta(struct viga *a)
+{
+    return a->Area * a->G * kapa;
+}
+double coeff(struct viga *a)
+{
+    return a->E * inertia(a);
+}
+    double alpha(struct viga * a)
     {
-      
 
-        printf("\n****** DATOS ******\n");                                                                      //tiempo-vx-vy
-        printf("\nModulo de Young (N/m2)\nE= %.2e\nAncho\tW= %.2e (m)\nAlto\tH= %.2e (m)\n", a->E, a->W, a->H); //tiempo-vx-vy
-        printf("\nCondiciones iniciales:\n");
-        printf("\nx inicial= %.2e (m)\tx final= %.2e (m)\tpaso dx= %.2e (m)\n", a->x, a->xf, a->dx); //tiempo-vx-vy
+        double alph = dx4(a);
+        alph = coeff(a) / alph;
 
-        printf("w= %.2e (m)\tdwdt= %.2e (m/s)\n", a->X[0][a->k_iter], a->X[1][a->k_iter]); //tiempo-vx-vy
-                                                                                           //  printf("\nCondiciones iniciales:\nw= %.2e (m)\ndwdx= %.2e\ndwdx2= %.2e\ndwdx3= %.2e\n", a->X[0][a->k_iter], a->X[1][a->k_iter], a->X[2][a->k_iter], a->X[3][a->k_iter]); //tiempo-vx-vy
-        printf("tiempo final= %.0lf (s)\tpaso dt= %.2e (s)\n", a->tf, a->dt);              //tiempo-vx-vy
-        printf("max Celdas t= %i \tmax Celdas x= %i (s)\n", a->maxTimeCells, a->maxCells); //tiempo-vx-vy
-        printf("\nVolumen= %.2e (m3)\nArea= %.2e (m2)\n", a->Vol, a->Area);                //tiempo-vx-vy
-        printf("\nDensidad= %.2e (kg/m3)\nCarga Distribuida= %.2e (N/m)\n", a->ro, a->qL); //tiempo-vx-vy
-        printf("\nMasa= %.2e (kg)\ngravedad= %.3lf (m/s2)\n", a->m, gravedad);
-        printf("\nFuerza extremo= %.2e (N)\nFreq. Forzada= %.2e (radHz)\n", a->F, a->freq);  //tiempo-vx-vy
-                                                                                             //tiempo-vx-vy
-        printf("\nDirectorio= %s\nTipo Funcion Forzada= %i\n", a->FILENAME, a->forcedIndex); //tiempo-vx-vy
-        printf("\n******** DATOS ********\n");
+       // printf("\nalpha= %.2e\n", alph);
+
+        return alph;
     }
-
-    void printData(void *filePointer, struct viga *a)
-    {
-        double coeff =1;
-        	coeff =coefficient(a);
-          coeff *= (a->L / a->m);
-       	coeff /= dx4(a);
-        // printf("\n%.2e\t%.2e", coeff, a->X[0][a->k_iter]);
-
-        char *content = "%.2e\t%.2e\t%.2e\t%.2e\t%.2e\t%.2e\t%.2e\t%.4lf\t%.2e\t%i\n";
-        fprintf((FILE *)filePointer, content, a->x, a->X[0][a->k_iter] * coeff, a->error, a->X[1][a->k_iter], a->y, a->T, a->Fx, a->t, a->I, a->k_iter); //tiempo-vx-vy
-    }
+   
