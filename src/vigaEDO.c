@@ -205,11 +205,12 @@ void solve(void *vo)
 {
 	struct viga *a = (struct viga *)vo;
 
-	if (a->k_iter < a->maxCells - 1)
+	if (a->k_iter < a->maxCells - 1 )
 	{
 		for (int k = equ - 1; k >= 0; k--)
 		{
 			a->X[k][a->k_iter+1 ] = a->X[k][a->k_iter] + RK4(a->t, a->X[k][a->k_iter], a->dt, a->x, edoAUsar[k], forzado[a->forcedIndex], a);
+		//	a->X[k][a->k_iter + 1] = a->X[k][a->k_iter];
 		}
 	}
 }

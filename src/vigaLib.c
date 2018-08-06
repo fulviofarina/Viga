@@ -59,7 +59,7 @@ void initFreqForz(char *aux, struct viga *a)
 void initTiempo(char *aux, struct viga *a)
 {
     a->tf = atof(aux);
-    a->dt = 2e-4;
+    a->dt = 1e-3;
     a->maxTimeCells = (int)(a->tf/a->dt);
    
 }
@@ -78,9 +78,12 @@ void initViga(struct viga *a, char *argv[])
 
     a->xf = atof(argv[6]);
     a->maxCells = atoi(argv[7]);
+   
 
     a->x = a->L;
-    a->dx = ((a->x - a->xf) / a->maxCells);
+    a->dx = ((a->xf - a->x) / a->maxCells);
+    
+    a->maxCells++;
 
     a->yf = a->W * 0.5;
     a->y = -1 * a->yf;

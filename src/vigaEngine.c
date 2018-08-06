@@ -47,7 +47,7 @@ void bucleX(int printEach, struct viga *a, int t_iter)
         }
         printer++;
 
-        a->x -= a->dx;
+        a->x += a->dx;
     }
 }
 
@@ -133,7 +133,7 @@ void printData(void *filePointer, struct viga *a)
     	coef /= a->I;
         coef/=a->ro; 
         coef*= beta(a);
-       coef *= 1e-13;
+       coef *= 1e-8;
     // printf("\n%.2e\t%.2e", coeff, a->X[0][a->k_iter]);
 
     char *content = "%.2e\t%.2e\t%.2e\t%.2e\t%.2e\t%.2e\t%.2e\t%.4lf\t%.2e\t%i\n";
